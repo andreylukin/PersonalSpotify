@@ -63,5 +63,5 @@ typings/
 
 
 # all the passwords
-./src/config.js
+/src/config.js
 
