@@ -18,6 +18,7 @@
   "homepage": "https://github.com/andreylukin/PersonalSpotify#readme",
   "dependencies": {
     "spotify-web-api-node": "^4.0.0",
-    "wiki-infobox-parser": "^0.1.11"
+    "wiki-infobox-parser": "^0.1.11",
+    "wiki-infobox-table": "0.0.1"
   }
 }
