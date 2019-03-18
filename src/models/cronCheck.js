@@ -1,7 +1,7 @@
 const config = require("../config");
 var wikiParser = require('wiki-infobox-parser');
 const fs = require('fs');
-const SpotifyApi  = require("./SpotifyApi");
+const SpotifyApi  = require("./SpotifyAPI.js");
 
 // async function getMyDeviceId() {
 //     const response = await this.spotifyApi.getMyDevices();
@@ -9,7 +9,7 @@ const SpotifyApi  = require("./SpotifyApi");
 //     // return device === undefined ? "Philoco aint here" : device.id;
 //     if(response.body != null) {
 //         return response.body.devices[0];
-//     } 
+//     }
 //     return null;
 // }
 
@@ -29,13 +29,14 @@ const SpotifyApi  = require("./SpotifyApi");
 
 
 function getTimestamp() {
-    let rawdata = JSON.parse(fs.readFileSync('/Users/andrey/Desktop/Projects/PersonalSpotify/src/recent-songs.json'));  
+    let rawdata = JSON.parse(fs.readFileSync('/root/PersonalSpotify/src/recent-songs.json'));
     return new Date(rawdata.timestamp);
 }
 
 function updateTimestamp(timestamp) {
+    console.log("We got that timestamp " + timestamp + "\n");
     output = {timestamp: timestamp};
-    fs.writeFileSync('/Users/andrey/Desktop/Projects/PersonalSpotify/src/recent-songs.json', JSON.stringify(output));
+    fs.writeFileSync('/root/PersonalSpotify/src/recent-songs.json', JSON.stringify(output));
 }
 
 
@@ -73,13 +74,13 @@ try {
 
         // var page = 'Cosmo Sheldrake';
         // var language = 'en';
-        
+
         // infobox(page, language, function(err, data){
         // if (err) {
         //     // Oh no! Something goes wrong!
         //     return;
         // }
-        
+
         // console.log(data);
     // });
         }

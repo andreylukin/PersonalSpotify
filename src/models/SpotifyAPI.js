@@ -1,6 +1,7 @@
 const SpotifyWebApi = require('spotify-web-api-node');
+const config = require('../config');
 
-class SpotifyApi {
+module.exports = class SpotifyApi {
     constructor() {
         this.spotifyApi = new SpotifyWebApi({
             clientId : config.username,
@@ -16,5 +17,3 @@ class SpotifyApi {
 
 
 }
-
-module.exports.SpotifyApi = SpotifyApi;
