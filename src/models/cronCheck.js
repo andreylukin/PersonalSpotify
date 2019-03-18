@@ -79,7 +79,6 @@ try {
                 recordObj.trackInfo.popularity = currentTrack.track.popularity;
                 recordObj.trackInfo.uri = currentTrack.track.uri;
                 recordObj.trackInfo.played_at = currentTrack.played_at;
-                recordObj.trackInfo.duration = currentTrack.duration;
 
 
                 recordObj.albumInfo = {};
@@ -109,6 +108,7 @@ try {
                 recordObj.trackAnalysisInfo.liveness = trackAFInfo.body.liveness;
                 recordObj.trackAnalysisInfo.valence = trackAFInfo.body.valence;
                 recordObj.trackAnalysisInfo.tempo = trackAFInfo.body.tempo;
+                recordObj.trackAnalysisInfo.duration_ms	 = trackAFInfo.body.duration_ms;
                 firebase.pushSong(recordObj);
             }
         }
