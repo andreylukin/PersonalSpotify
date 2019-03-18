@@ -109,8 +109,7 @@ try {
                 recordObj.trackAnalysisInfo.liveness = trackAFInfo.body.liveness;
                 recordObj.trackAnalysisInfo.valence = trackAFInfo.body.valence;
                 recordObj.trackAnalysisInfo.tempo = trackAFInfo.body.tempo;
-                // firebase.pushSong(recordObj);
-                console.log(currentTrack);
+                firebase.pushSong(recordObj);
             }
         }
         process.exit(0);
