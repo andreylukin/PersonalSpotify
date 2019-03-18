@@ -28,15 +28,18 @@ const SpotifyApi  = require("./SpotifyAPI.js");
 
 
 
+
+
+
 function getTimestamp() {
-    let rawdata = JSON.parse(fs.readFileSync('/root/PersonalSpotify/src/recent-songs.json'));
+    let rawdata = JSON.parse(fs.readFileSync(config.path + 'PersonalSpotify/src/recent-songs.json'));
     return new Date(rawdata.timestamp);
 }
 
 function updateTimestamp(timestamp) {
     console.log("We got that timestamp " + timestamp + "\n");
     output = {timestamp: timestamp};
-    fs.writeFileSync('/root/PersonalSpotify/src/recent-songs.json', JSON.stringify(output));
+    fs.writeFileSync(config.path + 'PersonalSpotify/src/recent-songs.json', JSON.stringify(output));
 }
 
 
