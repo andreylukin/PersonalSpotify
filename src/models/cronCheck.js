@@ -79,6 +79,7 @@ try {
                 recordObj.trackInfo.popularity = currentTrack.track.popularity;
                 recordObj.trackInfo.uri = currentTrack.track.uri;
                 recordObj.trackInfo.played_at = currentTrack.played_at;
+                recordObj.trackInfo.duration = currentTrack.duration;
 
 
                 recordObj.albumInfo = {};
@@ -108,7 +109,8 @@ try {
                 recordObj.trackAnalysisInfo.liveness = trackAFInfo.body.liveness;
                 recordObj.trackAnalysisInfo.valence = trackAFInfo.body.valence;
                 recordObj.trackAnalysisInfo.tempo = trackAFInfo.body.tempo;
-                firebase.pushSong(recordObj);
+                // firebase.pushSong(recordObj);
+                console.log(currentTrack);
             }
         }
         process.exit(0);
