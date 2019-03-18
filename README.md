@@ -11,10 +11,38 @@ One thing that I cared about a lot is to keep track of the genres I am listening
 
 I will keep everything on Firebase since it will be the least hassle to keep track of.
 
+Currently, what I have  working is I am saving data on the songs I am listening to on Firebase. Spotify's API doesn't have a good listener to let me know when I've listened to a new song, so my DigitalOcean Droplet has a cron job that pull the API every minute.
 
-Currently, here is my todo list:
 
-- [ ] 
-    - [ ]
+Currently, this is the data I am saving on Firebase:
+
+- albumInfo
+  - album_type
+  - name
+  - release_date
+  - total_tracks
+- artistInfo
+  - followers
+  - genres
+  - name
+  - popularity
+- trackAnalysisInfo
+  - danceability
+  - duration_ms
+  - energy
+  - instrumentalness
+  - key
+  - liveness
+  - mode
+  - speechiness
+  - tempo
+  - valence
+- trackInfo
+  - name
+  - played_at
+  - popularity
+  - uri
 
 Since I am taking some ML and AI classes next semester, I will try  to encorporate data analytics stuff into it as well.
+
+Now, this will run for a while until I run anything on it!
