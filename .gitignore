@@ -64,4 +64,5 @@ typings/
 
 # all the passwords
 /src/config.js
+/src/firebase_auth.json
 

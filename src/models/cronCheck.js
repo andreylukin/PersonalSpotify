@@ -2,6 +2,7 @@ const config = require("../config");
 var wikiParser = require('wiki-infobox-parser');
 const fs = require('fs');
 const SpotifyApi  = require("./SpotifyAPI.js");
+const Firebase  = require("./firebase.js");
 
 // async function getMyDeviceId() {
 //     const response = await this.spotifyApi.getMyDevices();
@@ -28,14 +29,14 @@ const SpotifyApi  = require("./SpotifyAPI.js");
 
 
 
-function writeToRecord(obj) {
-    let rawdata = JSON.parse(fs.readFileSync(config.path + 'PersonalSpotify/src/main-data.json'));
-    let arr = obj.concat(rawdata.main);
-    let temp = {};
-    temp.main = arr;
-    fs.writeFileSync(config.path + 'PersonalSpotify/src/main-data.json', JSON.stringify(temp));
+// function writeToRecord(obj) {
+//     let rawdata = JSON.parse(fs.readFileSync(config.path + 'PersonalSpotify/src/main-data.json'));
+//     let arr = obj.concat(rawdata.main);
+//     let temp = {};
+//     temp.main = arr;
+//     fs.writeFileSync(config.path + 'PersonalSpotify/src/main-data.json', JSON.stringify(temp));
 
-}
+// }
 
 
 
@@ -54,23 +55,30 @@ function updateTimestamp(timestamp, name) {
 try {
     (async () => {
         const spotifyApi = new SpotifyApi();
+        const firebase = new Firebase();
         await spotifyApi.authenticate();
         const response = await spotifyApi.spotifyApi.getMyRecentlyPlayedTracks();
         let tracks = response.body.items;
         let oldestRecorded = getTimestamp();
         let currentNewest = 0;
-        let allSongData = []
+        for(let i = 0; i < tracks.length; i+=1) {
+            let currentTrack = tracks[i];
+            if(oldestRecorded < new Date(currentTrack.played_at) && new Date(currentNewest) < new Date(currentTrack.played_at)) {
+                updateTimestamp(currentTrack.played_at, currentTrack.track.name);
+                currentNewest = currentTrack.played_at;
+            }
+        }
+
         for(let i = 0; i < tracks.length; i+=1) {
             let currentTrack = tracks[i];
             let recordObj = {};
 
-            if(oldestRecorded < new Date(currentTrack.played_at) && new Date(currentNewest) < new Date(currentTrack.played_at)) {
-                updateTimestamp(currentTrack.played_at, currentTrack.track.name);
-                currentNewest = currentTrack.played_at;
+            if(oldestRecorded < new Date(currentTrack.played_at)) {
                 recordObj.trackInfo = {};
                 recordObj.trackInfo.name = currentTrack.track.name;
                 recordObj.trackInfo.popularity = currentTrack.track.popularity;
                 recordObj.trackInfo.uri = currentTrack.track.uri;
+                recordObj.trackInfo.played_at = currentTrack.played_at;
 
 
                 recordObj.albumInfo = {};
@@ -100,17 +108,10 @@ try {
                 recordObj.trackAnalysisInfo.liveness = trackAFInfo.body.liveness;
                 recordObj.trackAnalysisInfo.valence = trackAFInfo.body.valence;
                 recordObj.trackAnalysisInfo.tempo = trackAFInfo.body.tempo;
-
-                allSongData.push(recordObj);
+                firebase.pushSong(recordObj);
             }
-
-            if(oldestRecorded < new Date(currentTrack.played_at)) {
-                console.log(currentTrack.track.name);
-            }
-            
-            
         }
-        writeToRecord(allSongData);
+        process.exit(0);
     })().then(console.log)
         .catch(console.log);
   } catch (e) {
