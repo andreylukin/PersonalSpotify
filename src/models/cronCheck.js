@@ -28,6 +28,15 @@ const SpotifyApi  = require("./SpotifyAPI.js");
 
 
 
+function writeToRecord(obj) {
+    let rawdata = JSON.parse(fs.readFileSync(config.path + 'PersonalSpotify/src/main-data.json'));
+    let arr = obj.concat(rawdata.main);
+    let temp = {};
+    temp.main = arr;
+    fs.writeFileSync(config.path + 'PersonalSpotify/src/main-data.json', JSON.stringify(temp));
+
+}
+
 
 
 
@@ -36,9 +45,8 @@ function getTimestamp() {
     return new Date(rawdata.timestamp);
 }
 
-function updateTimestamp(timestamp) {
-    console.log("We got that timestamp " + timestamp + "\n");
-    output = {timestamp: timestamp};
+function updateTimestamp(timestamp, name) {
+    output = {timestamp: timestamp, name: name};
     fs.writeFileSync(config.path + 'PersonalSpotify/src/recent-songs.json', JSON.stringify(output));
 }
 
@@ -51,46 +59,57 @@ try {
         let tracks = response.body.items;
         let oldestRecorded = getTimestamp();
         let currentNewest = 0;
+        let allSongData = []
         for(let i = 0; i < tracks.length; i+=1) {
             let currentTrack = tracks[i];
+            let recordObj = {};
 
             if(oldestRecorded < new Date(currentTrack.played_at) && new Date(currentNewest) < new Date(currentTrack.played_at)) {
-                updateTimestamp(currentTrack.played_at);
+                updateTimestamp(currentTrack.played_at, currentTrack.track.name);
                 currentNewest = currentTrack.played_at;
             }
 
             if(oldestRecorded < new Date(currentTrack.played_at)) {
                 console.log(currentTrack.track.name);
             }
-        //     // console.log(response.body.items[i]);
-        //     let name = response.body.items[i].track.name
-        //     let artist= response.body.items[i].track.artists[0].name;
-        //     // console.log(name + ": " + artist);
-        //     console.log(response.body.items[i]);
-        //     // let artistInfo = await spotifyApi.spotifyApi.getArtist(response.body.items[i].track.artists[0].id);
-        //     // console.log({name, artistInfo: artistInfo.body.genres});
-        //     // console.log(response.body.items[0].track.album.images);
-        //     // return;
-        // }
-        // const trackAFInfo = await spotifyApi.spotifyApi.getAudioFeaturesForTrack(response.body.items[0].track.uri.split(":")[2]);
-        // const trackAAInfo = await spotifyApi.spotifyApi.getAudioAnalysisForTrack(response.body.items[0].track.uri.split(":")[2]);
+            recordObj.trackInfo = {};
+            recordObj.trackInfo.name = currentTrack.track.name;
+            recordObj.trackInfo.popularity = currentTrack.track.popularity;
+            recordObj.trackInfo.uri = currentTrack.track.uri;
 
-        // var page = 'Cosmo Sheldrake';
-        // var language = 'en';
 
-        // infobox(page, language, function(err, data){
-        // if (err) {
-        //     // Oh no! Something goes wrong!
-        //     return;
-        // }
+            recordObj.albumInfo = {};
+            recordObj.albumInfo.name = currentTrack.track.album.name;
+            recordObj.albumInfo.album_type = currentTrack.track.album.album_type;
+            recordObj.albumInfo.release_date = currentTrack.track.album.release_date;
+            recordObj.albumInfo.total_tracks = currentTrack.track.album.total_tracks;
 
-        // console.log(data);
-    // });
+
+            const artistInfo = await spotifyApi.spotifyApi.getArtist(currentTrack.track.artists[0].id);
+            recordObj.artistInfo = {};
+            recordObj.artistInfo.name = artistInfo.body.name;
+            recordObj.artistInfo.popularity = artistInfo.body.popularity;
+            recordObj.artistInfo.followers = artistInfo.body.followers.total;
+            recordObj.artistInfo.genres = artistInfo.body.genres;
+
+
+
+            const trackAFInfo = await spotifyApi.spotifyApi.getAudioFeaturesForTrack(currentTrack.track.uri.split(":")[2]);
+            recordObj.trackAnalysisInfo = {};
+            recordObj.trackAnalysisInfo.danceability = trackAFInfo.body.danceability;
+            recordObj.trackAnalysisInfo.energy = trackAFInfo.body.energy;
+            recordObj.trackAnalysisInfo.key = trackAFInfo.body.key;
+            recordObj.trackAnalysisInfo.mode = trackAFInfo.body.mode;
+            recordObj.trackAnalysisInfo.speechiness = trackAFInfo.body.speechiness;
+            recordObj.trackAnalysisInfo.instrumentalness = trackAFInfo.body.instrumentalness;
+            recordObj.trackAnalysisInfo.liveness = trackAFInfo.body.liveness;
+            recordObj.trackAnalysisInfo.valence = trackAFInfo.body.valence;
+            recordObj.trackAnalysisInfo.tempo = trackAFInfo.body.tempo;
+
+            allSongData.push(recordObj);
+            
         }
-
-        // let l = getWikipediaGenres("Cosmo Sheldrake");
-
-        // console.log(response.body.items[response.body.items.length - 1]);
+        writeToRecord(allSongData);
     })().then(console.log)
         .catch(console.log);
   } catch (e) {
