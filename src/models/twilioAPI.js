@@ -2,11 +2,18 @@ const SpotifyApi  = require("./SpotifyAPI.js");
 const config = require('../config');
 var express = require('express')
 var app = express()
+const port = 80
+
 
 const spotifyApi = new SpotifyApi();
 
 
 app.post('/text', function (req, res) {
+    console.log(req.body);
+    res.send(200);
+    console.log("gotem");
+})
+
     try {
         (async () => {
             await spotifyApi.authenticate();
@@ -19,9 +26,6 @@ app.post('/text', function (req, res) {
     } catch (e) {
         console.log(e.toString());
     }
-    res.sendStatus(200)
-})
-
 
 
 
@@ -56,4 +60,4 @@ async function getTrackInfo(response) {
     return {name: response.name, popularity: response.popularity, artist: response.artists[0].name};
 }
 
-
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))

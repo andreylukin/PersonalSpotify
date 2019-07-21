@@ -46,8 +46,24 @@ function getTimestamp() {
     return new Date(rawdata.timestamp);
 }
 
+function getName(){
+    let rawdata = JSON.parse(fs.readFileSync(config.path + 'PersonalSpotify/src/recent-songs.json'));
+    return rawdata.name;
+}
+
+function getKey() {
+    let rawdata = JSON.parse(fs.readFileSync(config.path + 'PersonalSpotify/src/recent-songs.json'));
+    return rawdata.key;
+}
+
 function updateTimestamp(timestamp, name) {
-    output = {timestamp: timestamp, name: name};
+    output = {timestamp: timestamp, name: name, key: getKey()};
+    fs.writeFileSync(config.path + 'PersonalSpotify/src/recent-songs.json', JSON.stringify(output));
+}
+
+
+function updateKey(key) {
+    output = {timestamp: getTimestamp(), name: getName(), key: key};
     fs.writeFileSync(config.path + 'PersonalSpotify/src/recent-songs.json', JSON.stringify(output));
 }
 
@@ -61,11 +77,13 @@ try {
         let tracks = response.body.items;
         let oldestRecorded = getTimestamp();
         let currentNewest = 0;
+        let key = "";
+        let currentTrack = "";
         for(let i = 0; i < tracks.length; i+=1) {
-            let currentTrack = tracks[i];
+            currentTrack = tracks[i];
             if(oldestRecorded < new Date(currentTrack.played_at) && new Date(currentNewest) < new Date(currentTrack.played_at)) {
-                updateTimestamp(currentTrack.played_at, currentTrack.track.name);
                 currentNewest = currentTrack.played_at;
+                updateTimestamp(currentTrack.played_at, currentTrack.track.name);
             }
         }
 
@@ -109,9 +127,10 @@ try {
                 recordObj.trackAnalysisInfo.valence = trackAFInfo.body.valence;
                 recordObj.trackAnalysisInfo.tempo = trackAFInfo.body.tempo;
                 recordObj.trackAnalysisInfo.duration_ms	 = trackAFInfo.body.duration_ms;
-                firebase.pushSong(recordObj);
+                key = firebase.pushSong(recordObj);
             }
         }
+        updateKey(key);
         process.exit(0);
     })().then(console.log)
         .catch(console.log);
