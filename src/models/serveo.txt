@@ -1,1 +1,2 @@
-nohup ssh -o ServerAliveInterval=60 -R andreyserveospotify:80:localhost:3000 serveo.net &
+nohup ssh -o ServerAliveInterval=60 -R andreyserveospotify:80:localhost:80 serveo.net &
+forever start twilioAPI.js

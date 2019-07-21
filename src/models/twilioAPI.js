@@ -5,42 +5,45 @@ var app = express()
 const port = 80
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 
-var router = require('express').Router();
 var twilio = require('twilio');
-var bodyParser = require('body-parser');
 
-router.use(bodyParser.urlencoded({ extended: false }));
+var bodyParser = require('body-parser')
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
 
 const spotifyApi = new SpotifyApi();
 
 
 app.post('/text', function (req, res) {
-    const twiml = new MessagingResponse();
-    console.log(req.body);
-    // if(req.body.Body == "details") {
-        try {
-            (async () => {
-                await spotifyApi.authenticate();
-                const response = await spotifyApi.spotifyApi.getMyCurrentPlayingTrack();
-                const track = await getTrackInfo(response.body.item);
-                const artist = await getArtistInfo(response.body.item.artists[0].id);
-                twiml.message(generateTextBody(track, artist));
-            })().then(console.log)
-            .catch(console.log);
-        } catch (e) {
-            console.log(e.toString());
-        }
 
-        res.writeHead(200, {'Content-Type': 'text/xml'});
-        res.end(twiml.toString());
-        return;
-    // }
-    res.send(200);
+    try {
+        (async () => {
+            const twiml = new MessagingResponse();
+            let message = await getMessage();
+            twiml.message(message)
+            res.writeHead(200, {'Content-Type': 'text/xml'});
+            res.end(twiml.toString());
+        })().then(console.log)
+        .catch(console.log);
+    } catch (e) {
+        console.log(e.toString());
+    }
+
 
 
 })
 
 
+
+async function getMessage() {
+    await spotifyApi.authenticate();
+    const response = await spotifyApi.spotifyApi.getMyCurrentPlayingTrack();
+    const track = await getTrackInfo(response.body.item);
+    const artist = await getArtistInfo(response.body.item.artists[0].id);
+    return generateTextBody(track, artist);
+}
 
 
 
