@@ -5,14 +5,19 @@ var app = express()
 const port = 80
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 
+var router = require('express').Router();
+var twilio = require('twilio');
+var bodyParser = require('body-parser');
 
+router.use(bodyParser.urlencoded({ extended: false }));
 
 const spotifyApi = new SpotifyApi();
 
 
 app.post('/text', function (req, res) {
     const twiml = new MessagingResponse();
-    if(req.body.Body == "details") {
+    console.log(req.body);
+    // if(req.body.Body == "details") {
         try {
             (async () => {
                 await spotifyApi.authenticate();
@@ -25,11 +30,11 @@ app.post('/text', function (req, res) {
         } catch (e) {
             console.log(e.toString());
         }
-    
+
         res.writeHead(200, {'Content-Type': 'text/xml'});
         res.end(twiml.toString());
         return;
-    }
+    // }
     res.send(200);
 
 
@@ -70,4 +75,7 @@ async function getTrackInfo(response) {
     return {name: response.name, popularity: response.popularity, artist: response.artists[0].name};
 }
 
+
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
