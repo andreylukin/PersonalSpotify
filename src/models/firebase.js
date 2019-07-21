@@ -1,10 +1,7 @@
 var admin = require('firebase-admin');
-<<<<<<< Updated upstream
 var runAnalysisModel = require('./runAnalysisModel');
-=======
 const fs = require('fs');
 const config = require("../config");
->>>>>>> Stashed changes
 
 var serviceAccount = require('../firebase_auth.json');
 

@@ -3,29 +3,39 @@ const config = require('../config');
 var express = require('express')
 var app = express()
 const port = 80
+const MessagingResponse = require('twilio').twiml.MessagingResponse;
+
 
 
 const spotifyApi = new SpotifyApi();
 
 
 app.post('/text', function (req, res) {
-    console.log(req.body);
+    const twiml = new MessagingResponse();
+    if(req.body.Body == "details") {
+        try {
+            (async () => {
+                await spotifyApi.authenticate();
+                const response = await spotifyApi.spotifyApi.getMyCurrentPlayingTrack();
+                const track = await getTrackInfo(response.body.item);
+                const artist = await getArtistInfo(response.body.item.artists[0].id);
+                twiml.message(generateTextBody(track, artist));
+            })().then(console.log)
+            .catch(console.log);
+        } catch (e) {
+            console.log(e.toString());
+        }
+    
+        res.writeHead(200, {'Content-Type': 'text/xml'});
+        res.end(twiml.toString());
+        return;
+    }
     res.send(200);
-    console.log("gotem");
+
+
 })
 
-    try {
-        (async () => {
-            await spotifyApi.authenticate();
-            const response = await spotifyApi.spotifyApi.getMyCurrentPlayingTrack();
-            const track = await getTrackInfo(response.body.item);
-            const artist = await getArtistInfo(response.body.item.artists[0].id);
-            sendText(generateTextBody(track, artist));
-        })().then(console.log)
-        .catch(console.log);
-    } catch (e) {
-        console.log(e.toString());
-    }
+
 
 
 
