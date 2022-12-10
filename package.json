@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/andreylukin/PersonalSpotify#readme",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "firebase-admin": "^7.1.0",
     "moment": "^2.24.0",
     "spotify-web-api-node": "^4.0.0",
